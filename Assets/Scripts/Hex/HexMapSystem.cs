@@ -106,7 +106,7 @@ public class HexMapSystem : MonoBehaviour
             int offset = -(r >> 1);
             for (int q = offset; q < mapWidth + offset; q++)
             {
-                drawString($"{q}, {r}",GetWorldCoordFromAxialCoord(q, r), Color.black);
+                drawString($"{q}, {r}",GetWorldCoordFromAxialCoord(q, r)+Vector3.up*0.15f, Color.black);
             }
         }
 
@@ -120,18 +120,18 @@ public class HexMapSystem : MonoBehaviour
         Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
         if (screenPos.y < 0 || screenPos.y > Screen.height || screenPos.x < 0 || screenPos.x > Screen.width || screenPos.z < 0)
         {
-            GUI.color = restoreColor;
+        //    GUI.color = restoreColor;
             return;
         }
         Vector2 size = GUI.skin.label.CalcSize(new GUIContent(text));
-        Debug.Log(screenPos.y);
-        GUI.Label(new Rect(screenPos.x - (size.x / 2), screenPos.y , size.x, size.y), text);
+        //Debug.Log(screenPos.y);
+        GUI.Label(new Rect(screenPos.x - (size.x / 2), -screenPos.y + Screen.height , size.x, size.y), text);
         GUI.color = restoreColor;
     }
 
     Plane m_Plane;//A ghost plane for raycasting.
-    Vector3 m_DistanceFromCamera;//Make some space between plane(overlaps the map) and Camera
-    public float m_DistanceY;//same above
+    //Vector3 m_DistanceFromCamera;//Make some space between plane(overlaps the map) and Camera
+    //public float m_DistanceY;//same above
 
     protected virtual void Awake()
     {
@@ -143,9 +143,8 @@ public class HexMapSystem : MonoBehaviour
     void Start()
     {
 
-        Camera.main.transform.position = new Vector3(mapWidth / 2 * hexSize * 1.7320508f, m_DistanceY, (mapHeight / 2 + 1) * hexSize);
-        m_DistanceFromCamera = new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y - m_DistanceY, Camera.main.transform.position.z);
-        m_Plane = new Plane(Vector3.up, m_DistanceFromCamera);
+        Camera.main.transform.position = new Vector3((mapWidth-1) * hexSize * 1.7320508f/2,+10,(mapHeight-1)*hexSize-10);
+        m_Plane = new Plane(Vector3.up, Vector3.up*0.15f);
     }
     void Update()
     {
