@@ -9,14 +9,24 @@ public class HexMap
     //map tile by calling "HexMap.map[(q,r)]".
     //Notice that the "(int, int)" is a "tuple", which is, yet again, a data structure, look it up on Google if you are interested.
     public Dictionary<(int, int), GameObject> map;
+    private int mapHeight, mapWidth;
     private float hexSize;
-    ///<param name="maxWidth">How many tiles a row can fit.</param>
-    ///<param name="maxHeight">How many tiles a col can fit.</param>
-    public HexMap(int maxWidth, int maxHeight, float hexSize)
+    
+    ///<param name="mapWidth">How many tiles a row can fit.</param>
+    ///<param name="mapHeight">How many tiles a col can fit.</param>
+    public HexMap(int mapHeight, int mapWidth, float hexSize)
     {
+        init(mapHeight, mapWidth, hexSize);
+    }
+
+    public void init(int mapHeight, int mapWidth, float hexSize)
+    {
+        this.mapHeight = mapHeight;
+        this.mapWidth = mapWidth;
         this.hexSize = hexSize;
+
         map = new Dictionary<(int, int), GameObject>();
-        for (int r = 0; r < maxHeight; r++)
+        for (int r = 0; r < mapHeight; r++)
         {
             //Because we're using Axial coordinates(rhombus) to store our "semi-kinda-nearly-close-to-rectangular map", we need 
             //to offset the coordinate q to cancel out(offset) the distortion.
@@ -25,12 +35,23 @@ public class HexMap
             //Beware the "-" sign, if left without parentheses,it will change the r variable to negative number before shifting,
             //result in weird edge on your map.
             int offset = -(r >> 1);
-            for (int q = offset; q < maxWidth + offset; q++)
+            for (int q = offset; q < mapWidth + offset; q++)
             {
                 map.Add((q, r), new GameObject($"{q}, {r}"));
                 map[(q, r)].GetComponent<Transform>().position = GetWorldCoordFromMapCoord(q, r);
             }
         }
+    }
+
+    public void Reset()
+    {
+        foreach (var hex in map)
+        {
+            GameObject.DestroyImmediate(hex.Value);
+        }
+        map.Clear();
+        Debug.Log("Old Map Destoryed");
+        init(mapHeight, mapWidth, hexSize);
     }
     public Vector3 GetWorldCoordFromMapCoord(int mapCoordQ, int mapCoordR)
     {
@@ -40,7 +61,6 @@ public class HexMap
     {
         return HexRounding(((worldCoordX * 0.5773502f - 1f / 3 * worldCoordY) / hexSize, 2f / 3 * worldCoordY / hexSize));
     }
-
     private (int, int) HexRounding((float, float) co)
     {
         int x = Mathf.RoundToInt(co.Item1);
@@ -53,8 +73,9 @@ public class HexMap
 
         if (diffX > diffY && diffX > diffZ) x = -y - z;
         else if (diffY > diffZ) y = -x - z;
-        return (x,y);
+        return (x, y);
     }
+
 }
 //customizable size through level editor
 //auto snapping
