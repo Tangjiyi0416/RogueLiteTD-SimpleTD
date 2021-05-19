@@ -2,35 +2,54 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(MeshCollider))]
-public class HexTile : MonoBehaviour
+namespace Hex
 {
-    //When the mouse hovers over the GameObject, it turns to this color (red)
-    Color m_MouseOverColor = Color.red;
-
-    //This stores the GameObject’s original color
-    Color m_OriginalColor;
-
-    //Get the GameObject’s mesh renderer to access the GameObject’s material and color
-    MeshRenderer m_Renderer;
-
-    void Start()
+    [RequireComponent(typeof(MeshCollider))]
+    public class HexTile : MonoBehaviour
     {
-        //Fetch the mesh renderer component from the GameObject
-        m_Renderer = GetComponentInChildren<MeshRenderer>();
-        //Fetch the original color of the GameObject
-        m_OriginalColor = m_Renderer.material.color;
+        public HexTileData data;
+
+        MeshRenderer meshRenderer;
+        void Start()
+        {
+            //Fetch the mesh renderer component from the GameObject
+            meshRenderer = GetComponentInChildren<MeshRenderer>();
+        }
+
+        void OnMouseOver()
+        {
+            // Change the color of the GameObject to red when the mouse is over GameObject
+            meshRenderer.material.color = data.mouseOverColor;
+        }
+        void OnMouseDown()
+        {
+            data.currentColor=data.seletedColor;
+        }
+        void OnMouseExit()
+        {
+            // Reset the color of the GameObject back to normal
+            meshRenderer.material.color = data.currentColor;
+        }
     }
 
-    void OnMouseOver()
+    [System.Serializable]
+    public class HexTileData
     {
-        // Change the color of the GameObject to red when the mouse is over GameObject
-        m_Renderer.material.color = m_MouseOverColor;
-    }
+        public string originalPrefabName;
+        public int q, r;
 
-    void OnMouseExit()
-    {
-        // Reset the color of the GameObject back to normal
-        m_Renderer.material.color = m_OriginalColor;
+        //This stores the GameObject’s original color
+        public Color originalColor = Color.gray;
+        //When the mouse hovers over the GameObject, it turns to this color (red)
+        public Color mouseOverColor = Color.red;
+        //When the GameObject, it turns to this color (blue)
+        public Color seletedColor = Color.blue;
+        public Color currentColor = Color.gray;
+        public HexTileData(string originalPrefabName, int q, int r)
+        {
+            this.originalPrefabName = originalPrefabName;
+            this.q = q;
+            this.r = r;
+        }
     }
 }
