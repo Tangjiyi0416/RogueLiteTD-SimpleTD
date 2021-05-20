@@ -5,7 +5,7 @@ using System.Text;
 using UnityEngine;
 public static class SaveLoadManager
 {
-    public static void Save(SaveData saveData, string fileName)
+    public static void Save<T>(T saveData, string fileName) where T : SaveData
     {
         string json = JsonUtility.ToJson(saveData, true);
         Debug.Log($"Saving as JSON: {json}");

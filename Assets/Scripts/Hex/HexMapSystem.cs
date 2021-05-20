@@ -14,6 +14,10 @@ namespace Hex
         private float hexSize = 1f;
         [SerializeField]
         private GameObject baseTile;
+
+        public Color seletedColor = Color.blue;//When click on the GameObject, it turns to this color (blue)
+        public Color mouseOverColor = Color.red;//When the mouse hovers over the GameObject, it turns to this color (red)
+
         ///<summary>The key (int, int) is the tuple of (coordinate q, coordiante r)</summary>
         //Dictionary is a special data structure that can use a "Key" to access specific item in the storage.
         //In this case, I utilize its "Key" as coordinates for our map, so that we can easily edit the targeted
@@ -46,15 +50,14 @@ namespace Hex
                 for (int q = offset; q < mapWidth + offset; q++)
                 {
                     map.Add((q, r), Instantiate(baseTile, GetWorldCoordFromAxialCoord(q, r), Quaternion.identity, gameObject.transform).GetComponent<HexTile>());
-                    map[(q, r)].data = new HexTileData(baseTile.name, q, r);
-                    map[(q, r)].name = $"{q}, {r}";
-                    map[(q, r)].data.currentColor = map[(q, r)].data.originalColor = map[(q, r)].GetComponentInChildren<MeshRenderer>().material.color;
+                    map[(q, r)].Init(baseTile.name, q, r);
                 }
             }
         }
 
         public void DestroyCurrentMap()
         {
+            if (map == null) { Debug.Log("There is no map, nomad."); return; }
             foreach (var hex in map)
             {
                 GameObject.DestroyImmediate(hex.Value.gameObject);
@@ -87,21 +90,19 @@ namespace Hex
             HexMapSaveData saveData = SaveLoadManager.Load<HexMapSaveData>("map.dat");
             List<HexTileData> data = saveData.data;
             Dictionary<(int, int), HexTile> map = new Dictionary<(int, int), HexTile>();
-            foreach (var tile in data)
+            foreach (var tileData in data)
             {
-                int q = tile.q, r = tile.r;
+                int q = tileData.q, r = tileData.r;
                 map.Add(
                     (q, r)
                     , Instantiate(
-                        Resources.Load($"Tiles/{tile.originalPrefabName}") as GameObject
+                        Resources.Load($"HexTiles/{tileData.originalPrefabName}") as GameObject
                         , GetWorldCoordFromAxialCoord(q, r)
                         , Quaternion.identity
                         , gameObject.transform
                     ).GetComponent<HexTile>()
                 );
-                map[(q, r)].data = new HexTileData(tile.originalPrefabName, q, r);
-                map[(q, r)].name = $"{q}, {r}";
-                map[(q, r)].data.currentColor = map[(q, r)].GetComponentInChildren<MeshRenderer>().material.color = tile.currentColor;
+                map[(q, r)].Init(tileData);
 
             }
             this.map = map;

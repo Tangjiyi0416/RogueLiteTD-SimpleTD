@@ -9,6 +9,21 @@ namespace Hex
     {
         public HexTileData data;
 
+        public void Init(string baseTileName, int q, int r)
+        {
+            data = new HexTileData(baseTileName, q, r);
+            gameObject.name = $"{q}, {r}";
+            data.currentColor = data.originalColor = GetComponentInChildren<MeshRenderer>().material.color;
+
+        }
+        public void LoadData(HexTileData data)
+        {
+            this.data = data;
+            gameObject.name = $"{data.q}, {data.r}";
+            GetComponentInChildren<MeshRenderer>().material.color = data.currentColor;
+
+        }
+
         MeshRenderer meshRenderer;
         void Start()
         {
@@ -16,19 +31,23 @@ namespace Hex
             meshRenderer = GetComponentInChildren<MeshRenderer>();
         }
 
-        void OnMouseOver()
+        void OnMouseEnter()
         {
             // Change the color of the GameObject to red when the mouse is over GameObject
-            meshRenderer.material.color = data.mouseOverColor;
+            //meshRenderer.material.color = HexMapSystem.Instance.mouseOverColor;
+            meshRenderer.material.SetFloat("Boolean_1dbae06b4e654335b15f13bbc0562c0c",1f);
         }
         void OnMouseDown()
         {
-            data.currentColor=data.seletedColor;
+            data.currentColor = HexMapSystem.Instance.seletedColor;
+            meshRenderer.material.color = data.currentColor;
+
         }
         void OnMouseExit()
         {
             // Reset the color of the GameObject back to normal
-            meshRenderer.material.color = data.currentColor;
+            //meshRenderer.material.color = data.currentColor;
+            meshRenderer.material.SetFloat("Boolean_1dbae06b4e654335b15f13bbc0562c0c",0f);
         }
     }
 
@@ -40,10 +59,7 @@ namespace Hex
 
         //This stores the GameObject’s original color
         public Color originalColor = Color.gray;
-        //When the mouse hovers over the GameObject, it turns to this color (red)
-        public Color mouseOverColor = Color.red;
-        //When the GameObject, it turns to this color (blue)
-        public Color seletedColor = Color.blue;
+
         public Color currentColor = Color.gray;
         public HexTileData(string originalPrefabName, int q, int r)
         {
@@ -51,5 +67,9 @@ namespace Hex
             this.q = q;
             this.r = r;
         }
+    }
+    public enum GroundLevel
+    {
+        High,Low
     }
 }

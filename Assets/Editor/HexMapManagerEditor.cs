@@ -8,7 +8,6 @@ using Hex;
 public class HexMapManagerEditor : Editor
 {
     HexMapSystem hexMapManager;
-
     public override void OnInspectorGUI(){
         DrawDefaultInspector();
 
