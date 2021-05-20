@@ -102,7 +102,7 @@ namespace Hex
                         , gameObject.transform
                     ).GetComponent<HexTile>()
                 );
-                map[(q, r)].Init(tileData);
+                map[(q, r)].LoadData(tileData);
 
             }
             this.map = map;
