@@ -33,8 +33,6 @@ namespace Hex
 
         void OnMouseEnter()
         {
-            // Change the color of the GameObject to red when the mouse is over GameObject
-            //meshRenderer.material.color = HexMapSystem.Instance.mouseOverColor;
             meshRenderer.material.SetFloat("Boolean_1dbae06b4e654335b15f13bbc0562c0c",1f);
         }
         void OnMouseDown()
@@ -45,8 +43,6 @@ namespace Hex
         }
         void OnMouseExit()
         {
-            // Reset the color of the GameObject back to normal
-            //meshRenderer.material.color = data.currentColor;
             meshRenderer.material.SetFloat("Boolean_1dbae06b4e654335b15f13bbc0562c0c",0f);
         }
     }

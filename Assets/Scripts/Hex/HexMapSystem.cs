@@ -16,8 +16,6 @@ namespace Hex
         private GameObject baseTile;
 
         public Color seletedColor = Color.blue;//When click on the GameObject, it turns to this color (blue)
-        public Color mouseOverColor = Color.red;//When the mouse hovers over the GameObject, it turns to this color (red)
-
         ///<summary>The key (int, int) is the tuple of (coordinate q, coordiante r)</summary>
         //Dictionary is a special data structure that can use a "Key" to access specific item in the storage.
         //In this case, I utilize its "Key" as coordinates for our map, so that we can easily edit the targeted
