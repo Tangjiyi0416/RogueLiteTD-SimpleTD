@@ -8,17 +8,17 @@ namespace CombatSystem
         public int life;
         public int defence;
         public Phases baseDamage;
-        public Phases finalDamage;
+        public Phases modifiedDamage;
         public Phases Resistence;
         public List<CombatModifier> combatModifiers;
-        public abstract void Init();
-        public abstract void UpdateFinalDamage();
+        public Skill currentSkill;
+        public abstract void UpdateModifiedDamage();
         public abstract void Attack();
         public abstract void UseSkill();//strategy pattern
 
 
         public abstract void RecieveDamage();
-        public abstract void RecieveEffect(CombatEffect effect);
+        public abstract void RecieveEffect(StatusEffect effect);
     }
     //五行
     public class Phases
@@ -31,31 +31,38 @@ namespace CombatSystem
         Metal, Wood, Water, Fire, Earth
     }
 
-    public abstract class CombatSkill{
+    public abstract class Skill
+    {
+        public const string DISPLAY_NAME="UNNAMED";
+        public static readonly string[] TAGS = {};
+        public const int CAST_TIME = 0;//in frames
+        public const int PRIMARY_DURATION = 0;//in frames
+        public const int COOLDOWN = 0;//in frames
 
+        public abstract void Use();
     }
     public abstract class CombatModifier
     {
-        public string modifierName;
-        public List<string> tags;
+        public const string DISPLAY_NAME = "UNNAMED";
+        public static readonly string[] TAGS = {};
         //public targeting method (strategy pattern)
-        public int castTime;//in frames
-        public int mainDuration;//in frames
-        public int coolDown;//in frames
 
-        public abstract void Modifier(CombatManager host);
+
+        public abstract void Modify(CombatManager host);
 
     }
 
     //CombatEffect is the base class for any combat-related Effects you want to implement
-    public abstract class CombatEffect
+    public abstract class StatusEffect
     {
-        public string effectName;
-        public int effectDuration;
-        public int effectDurationTimer;
+        public const string DISPLAY_NAME="UNNAMED";
+        public const int DEFAULT_DURATION=0;
 
-        public CombatManager owner;
-        public CombatManager target;
+        public int duration;
+        public int durationTimer;
+
+        private CombatManager owner;
+        private CombatManager target;
 
         ///<param name = "duration">in frames</param>
         ///<summary>Sets owner, target, and the duration of this effect, the effect will expire when the effectDurationTimer goes zero.</summary>
@@ -63,7 +70,7 @@ namespace CombatSystem
         {
             this.owner = owner;
             this.target = target;
-            this.effectDurationTimer = this.effectDuration = duration;
+            this.durationTimer = this.duration = duration;
 
         }
         public abstract void Effect();
@@ -76,7 +83,7 @@ namespace CombatSystem
     //Anything implemented this interface can get combat effects from any sources. How they handled the RecieveEffect() method is completely up to you.
     public interface ICanRecieveEffect
     {
-        public void RecieveEffect(CombatEffect effecct);
+        public void RecieveEffect(StatusEffect effecct);
     }
-   
+
 }

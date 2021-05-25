@@ -66,48 +66,6 @@ namespace Hex
             Debug.Log("Old Map Destroyed.");
         }
 
-        [System.Serializable]
-        public class HexMapSaveData : SaveData
-        {
-            public List<HexTileData> data = new List<HexTileData>();
-            public HexMapSaveData(Dictionary<(int, int), HexTile> map)
-            {
-                foreach (var tile in map)
-                {
-                    data.Add(tile.Value.data);
-                }
-            }
-        }
-
-        public void SaveCurrentMap()
-        {
-            SaveLoadManager.Save(new HexMapSaveData(map), "map.dat");
-        }
-        public void LoadSavedMap()
-        {
-            HexMapSaveData saveData = SaveLoadManager.Load<HexMapSaveData>("map.dat");
-            List<HexTileData> data = saveData.data;
-            Dictionary<(int, int), HexTile> map = new Dictionary<(int, int), HexTile>();
-            foreach (var tileData in data)
-            {
-                int q = tileData.q, r = tileData.r;
-                map.Add(
-                    (q, r)
-                    , Instantiate(
-                        Resources.Load($"HexTiles/{tileData.originalPrefabName}") as GameObject
-                        , GetWorldCoordFromAxialCoord(q, r)
-                        , Quaternion.identity
-                        , gameObject.transform
-                    ).GetComponent<HexTile>()
-                );
-                map[(q, r)].LoadData(tileData);
-
-            }
-            this.map = map;
-
-        }
-
-
         const float sqrt3 = 1.7320508f;
         const float inverSqrt3 = 0.5773502f;
         //Methods that convert coordinates to world or to map.

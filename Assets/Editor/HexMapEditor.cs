@@ -37,12 +37,12 @@ public class HexMapEditor : EditorWindow
         }
         if (GUILayout.Button("Save current Map"))
         {
-            HexMapSystem.Instance.SaveCurrentMap();
+            HexMapSaveLoadManager.Instance.SaveCurrentMap();
         }
         if (GUILayout.Button("Load saved Map"))
         {
             if (HexMapSystem.Instance.map != null) Debug.Log("Pls Destroy current map first.");
-            else HexMapSystem.Instance.LoadSavedMap();
+            else HexMapSaveLoadManager.Instance.LoadSavedMap();
         }
     }
 }
