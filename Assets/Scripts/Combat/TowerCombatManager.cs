@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,20 +18,24 @@ namespace CombatSystem
         }
         public override void Attack()
         {
-            foreach(var t in targeting.GetTargets(3)){
-                Debug.Log(t.name);
+            foreach (var target in targeting.GetTargets(3))
+            {
+                target.RecieveHit(new Hit(baseDamage, totalDamageIncrement, totalDamageMultiplier, this));
             }
-            
+
         }
 
-        public override void RecieveDamage()
+        public override void RecieveHit(Hit hit)
         {
-            throw new System.NotImplementedException();
+            hit.origin.TriggerOnHitEffect(hit);
+            Phases finalDamage = hit.baseDamage * (hit.totalDamageIncrease) * (hit.totalDamageMore);
+            life -= finalDamage.Total;
+            TriggerWhenHitEffects(hit);
+            if (IsDead()) Dead();
         }
-
         public override void RecieveEffect(StatusEffect effect)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public override void UpdateModifiedDamage()
@@ -58,5 +63,13 @@ namespace CombatSystem
             else if (attackCoolDownTimer > 0) attackCoolDownTimer--;
 
         }
+
+        protected override void Dead()
+        {
+            Debug.Log("I'm a Tower and I'm dead.");
+            base.Dead();
+        }
+
+
     }
 }

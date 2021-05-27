@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,19 +7,19 @@ namespace CombatSystem
 {
     public class CreepCombatManager : CombatManager
     {
+
         public override void Attack()
         {
             throw new System.NotImplementedException();
         }
 
-        public override void RecieveDamage()
+        public override void RecieveHit(Hit hit)
         {
             throw new System.NotImplementedException();
         }
-
         public override void RecieveEffect(StatusEffect effect)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public override void UpdateModifiedDamage()
