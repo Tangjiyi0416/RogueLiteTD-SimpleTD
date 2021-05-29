@@ -3,8 +3,10 @@ namespace CombatSystem
 {
     public class TestSkill : Skill
     {
-        new public const string DISPLAY_NAME ="Test Skill 1";
-        new public static readonly string[] TAGS ={"Test only","123 123"};
+        public TestSkill() 
+        : base("permanent_alt_attack", "Fire form", "Your attack is imbued with fire.", new string[]{}, 0, 0, 20)
+        {
+        }
 
         public override void Use()
         {

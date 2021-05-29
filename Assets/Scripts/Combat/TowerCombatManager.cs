@@ -20,32 +20,10 @@ namespace CombatSystem
         {
             foreach (var target in targeting.GetTargets(3))
             {
-                target.RecieveHit(new Hit(baseDamage, totalDamageIncrement, totalDamageMultiplier, this));
+                target.ReceiveHit(new Hit(baseDamage, totalDamageIncrement, totalDamageMultiplier, this, target));
             }
-
-        }
-
-        public override void RecieveHit(Hit hit)
-        {
-            hit.origin.TriggerOnHitEffect(hit);
-            Phases finalDamage = hit.baseDamage * (hit.totalDamageIncrease) * (hit.totalDamageMore);
-            life -= finalDamage.Total;
-            TriggerWhenHitEffects(hit);
-            if (IsDead()) Dead();
-        }
-        public override void RecieveEffect(StatusEffect effect)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void UpdateModifiedDamage()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void UseSkill()
-        {
-            throw new System.NotImplementedException();
+            
+            tmp?.ReceiveHit(new Hit(baseDamage, totalDamageIncrement, totalDamageMultiplier, this, tmp));
         }
 
         private void Start()
@@ -61,6 +39,10 @@ namespace CombatSystem
                 attackCoolDownTimer = attackCoolDown;
             }
             else if (attackCoolDownTimer > 0) attackCoolDownTimer--;
+            if (statusEffects.Count > 0)
+                //Debug.Log($"{statusEffects[0].DISPLAY_NAME} {statusEffects.Count}");
+
+            TriggerUpdateStatusEffectEvent();
 
         }
 

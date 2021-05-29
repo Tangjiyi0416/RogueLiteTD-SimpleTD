@@ -1,44 +1,134 @@
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 namespace CombatSystem
 {
-    public abstract class CombatManager : MonoBehaviour, ICanRecieveHit, ICanRecieveEffect
+    public delegate void OnHitEvent(Hit hit);
+    public delegate void WhenHitEvent(Hit hit);
+    public delegate void UpdateStatusEffectEvent();
+
+    //Every tower and creep have one and only one CombatManager, it handles all combat related stuff except moving.
+    //CombatManager fuctions as a container with some extra ability, so it doesn't "generate" stats like life, defence, baseDamage, etc. on its own.
+    //When a tower/creep spawns, all those data needs to be assgined to the corresponding fields in CombatManager(Maybe a default modifier?).
+    public abstract class CombatManager : MonoBehaviour
     {
         public int life = 0;
         public int maxLife = 0;
         public int defence = 0;
-        public Phases baseDamage = new Phases(0, 0, 0, 0, 0);
-        public Phases totalDamageIncrement = new Phases(1);
-        public Phases totalDamageMultiplier = new Phases(1);
+        public Phases baseDamage = new Phases(0);
+        public Phases totalDamageIncrement = new Phases(100);
+        public Phases totalDamageMultiplier = new Phases(100);
         public Phases Resistence = new Phases(0);
-        protected List<Modifier> modifiers;
-        protected List<StatusEffect> statusEffects;
+        protected List<Modifier> modifiers = new List<Modifier>();
+        protected List<StatusEffect> statusEffects = new List<StatusEffect>();
+        public List<Skill> skills = new List<Skill>();//If count >= 1, skills[0] should be the default attack
         public Skill currentSkill;
-        public abstract void UpdateModifiedDamage();
         public abstract void Attack();
-        public abstract void UseSkill();//strategy pattern
+        //Schedule a skill that will replace the currentSkill, so it will be called by the next Attack().
+        //Notice that after you replace the currentSkill, it will not automatically change back
+        //, this allows you to make more complex skill while requires more caution when dealing with.
+        //JUST DON'T FORGET TO ADD AND CALL SOME SORT OF "RESET CURRENT SKILL METHOD" IN YOUR SKILLS!!!
+        public virtual void UseSkill(string skillName)
+        {
+            currentSkill = skills.Where(x => x.NAME == skillName).First();
+        }
+        public event OnHitEvent onHitEvent;
+        public event WhenHitEvent whenHitEvent;
+        public event UpdateStatusEffectEvent updateStatusEffectEvent;
 
-        public delegate void OnHitEffects(Hit hit);
-        public event OnHitEffects onHitEffects;
-        public delegate void WhenHitEffects(Hit hit);
-        public event WhenHitEffects whenHitEffects;
+        public void TriggerOnHitEvent(Hit hit)
+        {
+            onHitEvent?.Invoke(hit);
+        }
 
-        public void TriggerOnHitEffect(Hit hit)
+        public void TriggerWhenHitEvent(Hit hit)
         {
-            onHitEffects?.Invoke(hit);
+            whenHitEvent?.Invoke(hit);
         }
-        public void TriggerWhenHitEffects(Hit hit)
+        public virtual void ReceiveHit(Hit hit)
         {
-            whenHitEffects?.Invoke(hit);
+            hit.origin.TriggerOnHitEvent(hit);
+            Phases finalDamage = hit.baseDamage * (hit.totalDamageIncrement) * (hit.totalDamageMultiplier) / (new Phases(10000));
+            life -= finalDamage.Total;
+            Debug.Log($"{gameObject.name} 受到 {finalDamage.Total} 點傷害");
+            TriggerWhenHitEvent(hit);
+            if (IsDead()) Dead();
         }
-        public virtual void AddModifier(Modifier modifier)
+
+        public virtual void ReceiveHeal(int number)
         {
-            modifier.Modify(this);
+            life += number;
+            life = life > maxLife ? maxLife : life;
         }
-        public abstract void RecieveHit(Hit hit);
-        public abstract void RecieveEffect(StatusEffect effect);
+
+        public CombatManager tmp;
+        public virtual void LifeGain()
+        {
+            ReceiveModifier(new ExampleLifeGainOnHitModifier());
+        }
+        public virtual void LifeLose()
+        {
+            RemoveModifier("example_life_gain_on_hit_modifier");
+        }
+        public virtual void ttt()
+        {
+            tmp.ReceiveHit(new Hit(baseDamage, totalDamageIncrement * (new Phases(50)), totalDamageMultiplier, this, tmp));
+        }
+        public virtual void ReceiveStatusEffect(StatusEffect effect)
+        {
+            foreach (StatusEffect e in statusEffects)
+            {
+                if (e.NAME == effect.NAME)
+                {
+                    e.durationTimer = effect.duration;
+                    return;
+                }
+            }
+            effect.OnAdded();
+            statusEffects.Add(effect);
+        }
+        protected virtual void TriggerUpdateStatusEffectEvent()
+        {
+            updateStatusEffectEvent?.Invoke();
+        }
+        public virtual void RemoveStatusEffect(string effectName)
+        {
+            foreach (StatusEffect e in statusEffects)
+            {
+                if (e.NAME == effectName)
+                {
+                    e.OnRemoved();
+                    statusEffects.Remove(e);
+                    return;
+                }
+            }
+        }
+        public virtual void ReceiveModifier(Modifier modifier)
+        {
+
+            modifier.OnAdded(this);
+            modifiers.Add(modifier);
+            Debug.Log($"{gameObject.name} get {modifier.DISPLAY_NAME}");
+
+        }
+        public virtual void RemoveModifier(string modifierName)
+        {
+            foreach (Modifier m in modifiers)
+            {
+                if (m.NAME == modifierName)
+                {
+                    m.OnRemoved(this);
+                    modifiers.Remove(m);
+                    Debug.Log($"{gameObject.name} lose {m.DISPLAY_NAME}");
+
+                    return;
+                }
+            }
+
+        }
+
         public bool IsDead()
         {
             return life <= 0 ? true : false;
@@ -49,13 +139,11 @@ namespace CombatSystem
 
             GameObject.Destroy(gameObject);
         }
-
-
     }
-    //五行
-    public class Phases
+    [Serializable]
+    public class Phases //五行
     {
-        int metal, wood, water, fire, earth;
+        public int metal, wood, water, fire, earth;
         public int Total { get => metal + wood + water + fire + earth; }
         public Phases(int n)
         {
@@ -93,72 +181,18 @@ namespace CombatSystem
     public class Hit
     {
         public Phases baseDamage;
-        public Phases totalDamageIncrease;
-        public Phases totalDamageMore;
+        public Phases totalDamageIncrement;
+        public Phases totalDamageMultiplier;
         public CombatManager origin;
+        public CombatManager target;
 
-        public Hit(Phases baseDamage, Phases totalDamageIncrease, Phases totalDamageMore, CombatManager owner)
+        public Hit(Phases baseDamage, Phases totalDamageIncrease, Phases totalDamageMore, CombatManager origin, CombatManager target)
         {
             this.baseDamage = baseDamage;
-            this.totalDamageIncrease = totalDamageIncrease;
-            this.totalDamageMore = totalDamageMore;
-            this.origin = owner;
-        }
-    }
-
-    public abstract class Skill
-    {
-        public readonly string DISPLAY_NAME = "UNNAMED";
-        public static readonly string[] TAGS = { };
-        public readonly int CAST_TIME = 0;//in frames
-        public readonly int PRIMARY_DURATION = 0;//in frames
-        public readonly int COOLDOWN = 0;//in frames
-
-        public abstract void Use();
-    }
-
-    public abstract class Modifier
-    {
-        public readonly string DISPLAY_NAME = "UNNAMED";
-        public static readonly string[] TAGS = { };
-        ///<summary>Call when added to a CombatManager.</summary>
-        public abstract void Modify(CombatManager owner);
-        ///<summary>Call when removed from a CombatManager.</summary>
-        public abstract void UnModify(CombatManager owner);
-    }
-
-    //CombatEffect is the base class for any combat-related Effects you want to implement
-    public abstract class StatusEffect
-    {
-        public readonly string DISPLAY_NAME = "UNNAMED";
-        public readonly int DEFAULT_DURATION = 0;
-
-        public int duration;
-        public int durationTimer;
-
-        protected CombatManager origin;
-        protected CombatManager target;
-
-        ///<param name = "duration">in frames</param>
-        ///<summary>Sets owner, target, and the duration of this effect, the effect will expire when the effectDurationTimer goes zero.</summary>
-        public StatusEffect(CombatManager origin, CombatManager target, int duration)
-        {
+            this.totalDamageIncrement = totalDamageIncrease;
+            this.totalDamageMultiplier = totalDamageMore;
             this.origin = origin;
             this.target = target;
-            this.durationTimer = this.duration = duration;
-
         }
-        public abstract void Effect();
     }
-    //Anything implemented this interface can be damaged. How they handled the RecieveDamage() method is completely up to you.
-    public interface ICanRecieveHit
-    {
-        public void RecieveHit(Hit hit);
-    }
-    public interface ICanRecieveEffect
-    {
-        public void RecieveEffect(StatusEffect effect);
-    }
-
-
 }

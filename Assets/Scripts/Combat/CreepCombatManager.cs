@@ -7,31 +7,15 @@ namespace CombatSystem
 {
     public class CreepCombatManager : CombatManager
     {
-
         public override void Attack()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void RecieveHit(Hit hit)
-        {
-            throw new System.NotImplementedException();
-        }
-        public override void RecieveEffect(StatusEffect effect)
         {
             throw new NotImplementedException();
         }
-
-        public override void UpdateModifiedDamage()
+        public override void ReceiveHit(Hit hit)
         {
-            throw new System.NotImplementedException();
+            base.ReceiveHit(hit);
+            //Debug.Log($"{hit.origin} {hit.target}");
         }
-
-        public override void UseSkill()
-        {
-            throw new System.NotImplementedException();
-        }
-
         // Start is called before the first frame update
         void Start()
         {
@@ -43,5 +27,7 @@ namespace CombatSystem
         {
 
         }
+
+
     }
 }
