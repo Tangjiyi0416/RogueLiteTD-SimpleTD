@@ -6,27 +6,12 @@ namespace CombatSystem
 {
     public class TestTargetingMethod : TargetingMethod
     {
-        HexMapSystem hexMapSystem;
-
-        private List<CombatManager> targets;
-        public override void Init()
+        private HashSet<CombatManager> targets = new HashSet<CombatManager>();
+        public override HashSet<CombatManager> GetTargets(int targetNumber)
         {
-            hexMapSystem = HexMapSystem.Instance;
-            targets = new List<CombatManager>();
-            
-        }
-        public override List<CombatManager> GetTargets(int targetNumber)
-        {
+            targets.RemoveWhere(t => t == null);
             if (targets.Count < targetNumber)
-            {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                RaycastHit hit;
-                if (Input.GetMouseButton(0) && Physics.Raycast(ray, out hit))
-                {
-                    targets.Add(hit.transform.GetComponent<CreepCombatManager>());
-                }
-                
-            }
+                targets.Add(GameObject.Find("TestCreep")?.GetComponent<CombatManager>());
             return targets;
         }
     }

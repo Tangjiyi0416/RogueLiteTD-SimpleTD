@@ -5,7 +5,7 @@ namespace CombatSystem
     {
         public readonly string NAME;
         public readonly string DISPLAY_NAME;
-        public readonly string DISPLAY_DESCRIPTION;
+        public string DISPLAY_DESCRIPTION;
         public readonly int DEFAULT_DURATION;
 
         public int duration;
@@ -32,12 +32,12 @@ namespace CombatSystem
         public abstract void OnRemoved();
         public virtual void Effect()
         {
-            durationTimer--;
-            if (durationTimer <= 0)
+            if (durationTimer == 0)
             {
                 target.RemoveStatusEffect(this.NAME);
                 OnRemoved();
             }
+            durationTimer--;
         }
 
     }

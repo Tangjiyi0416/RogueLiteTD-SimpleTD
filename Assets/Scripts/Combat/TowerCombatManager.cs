@@ -7,43 +7,16 @@ namespace CombatSystem
 {
     public class TowerCombatManager : CombatManager
     {
-        public TargetingMethod targeting;
-        public int attackCoolDown;
-        public int attackCoolDownTimer;
-
-        public void Init()
-        {
-            targeting = new TestTargetingMethod();
-            targeting.Init();
-        }
-        public override void Attack()
-        {
-            foreach (var target in targeting.GetTargets(3))
-            {
-                target.ReceiveHit(new Hit(baseDamage, totalDamageIncrement, totalDamageMultiplier, this, target));
-            }
-            
-            tmp?.ReceiveHit(new Hit(baseDamage, totalDamageIncrement, totalDamageMultiplier, this, tmp));
-        }
-
-        private void Start()
-        {
-            Init();
-            attackCoolDownTimer = 0;
+        private void Start() {
+            skills.Add(new TestDefaultAttackSkill(this));
+            skills.Add(new TestFireAttackSkill(this));
+            ResetCurrentSkillToDefaultSkill();
         }
         private void Update()
         {
-            if (attackCoolDownTimer == 0)
-            {
-                Attack();
-                attackCoolDownTimer = attackCoolDown;
-            }
-            else if (attackCoolDownTimer > 0) attackCoolDownTimer--;
-            if (statusEffects.Count > 0)
-                //Debug.Log($"{statusEffects[0].DISPLAY_NAME} {statusEffects.Count}");
-
+            //if (statusEffects.Count > 0) Debug.Log($"{statusEffects[0].DISPLAY_NAME} {statusEffects.Count}");
+            UseCurrentSkill();
             TriggerUpdateStatusEffectEvent();
-
         }
 
         protected override void Dead()

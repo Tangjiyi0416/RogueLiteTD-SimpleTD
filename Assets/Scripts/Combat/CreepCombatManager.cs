@@ -5,29 +5,10 @@ using UnityEngine;
 
 namespace CombatSystem
 {
-    public class CreepCombatManager : CombatManager
-    {
-        public override void Attack()
-        {
-            throw new NotImplementedException();
+    public class CreepCombatManager : CombatManager{
+
+        private void Update() {
+            TriggerUpdateStatusEffectEvent();
         }
-        public override void ReceiveHit(Hit hit)
-        {
-            base.ReceiveHit(hit);
-            //Debug.Log($"{hit.origin} {hit.target}");
-        }
-        // Start is called before the first frame update
-        void Start()
-        {
-
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-
-        }
-
-
     }
 }

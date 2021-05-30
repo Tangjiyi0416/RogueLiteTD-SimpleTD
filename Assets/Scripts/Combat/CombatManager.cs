@@ -25,14 +25,26 @@ namespace CombatSystem
         protected List<StatusEffect> statusEffects = new List<StatusEffect>();
         public List<Skill> skills = new List<Skill>();//If count >= 1, skills[0] should be the default attack
         public Skill currentSkill;
-        public abstract void Attack();
+        public virtual void UseCurrentSkill()
+        {
+            currentSkill?.Use();
+        }
         //Schedule a skill that will replace the currentSkill, so it will be called by the next Attack().
         //Notice that after you replace the currentSkill, it will not automatically change back
         //, this allows you to make more complex skill while requires more caution when dealing with.
         //JUST DON'T FORGET TO ADD AND CALL SOME SORT OF "RESET CURRENT SKILL METHOD" IN YOUR SKILLS!!!
-        public virtual void UseSkill(string skillName)
+        public virtual void ScheduleSkill(string skillName)
         {
+            Debug.Log($"ScheduleSkill: {skillName}");
             currentSkill = skills.Where(x => x.NAME == skillName).First();
+            currentSkill.PrepareSkill();
+            Debug.Log($"CurrentSkill: {currentSkill.DISPLAY_NAME}, it will last {currentSkill.SKILL_DURATION} frames.");
+
+        }
+        public virtual void ResetCurrentSkillToDefaultSkill()
+        {
+            currentSkill = skills.Count > 0 ? skills[0] : null;
+            currentSkill.PrepareSkill();
         }
         public event OnHitEvent onHitEvent;
         public event WhenHitEvent whenHitEvent;
@@ -50,9 +62,8 @@ namespace CombatSystem
         public virtual void ReceiveHit(Hit hit)
         {
             hit.origin.TriggerOnHitEvent(hit);
-            Phases finalDamage = hit.baseDamage * (hit.totalDamageIncrement) * (hit.totalDamageMultiplier) / (new Phases(10000));
-            life -= finalDamage.Total;
-            Debug.Log($"{gameObject.name} 受到 {finalDamage.Total} 點傷害");
+            life -= CombatManager.CalFinalDamgeFromHit(hit).Total;
+            Debug.Log($"{gameObject.name} 被 {hit.origin.currentSkill} Hit, 受到 {CombatManager.CalFinalDamgeFromHit(hit).Total} 點傷害");
             TriggerWhenHitEvent(hit);
             if (IsDead()) Dead();
         }
@@ -82,7 +93,7 @@ namespace CombatSystem
             {
                 if (e.NAME == effect.NAME)
                 {
-                    e.durationTimer = effect.duration;
+                    e.durationTimer = e.duration;
                     return;
                 }
             }
@@ -139,6 +150,16 @@ namespace CombatSystem
 
             GameObject.Destroy(gameObject);
         }
+
+        //Utility Fuctions
+        public static Phases CalFinalDamgeFromHit(Hit hit)
+        {
+            return hit.baseDamage * hit.totalDamageIncrement * hit.totalDamageMultiplier * (new Phases(100) - hit.target.Resistence) / (new Phases(1000000));
+        }
+        public static Phases CalFinalDamgeFromValues(Phases baseDamage, Phases totalDamageIncrement, Phases totalDamageMultiplier, Phases targetResistence)
+        {
+            return baseDamage * totalDamageIncrement * totalDamageMultiplier * (new Phases(100) - targetResistence) / (new Phases(1000000));
+        }
     }
     [Serializable]
     public class Phases //五行
@@ -173,10 +194,6 @@ namespace CombatSystem
             return new Phases(a.metal / b.metal, a.wood / b.wood, a.water / b.water, a.fire / b.fire, a.earth / b.earth);
         }
     }
-    public enum PhaseType
-    {
-        Metal, Wood, Water, Fire, Earth
-    }
 
     public class Hit
     {
@@ -186,11 +203,11 @@ namespace CombatSystem
         public CombatManager origin;
         public CombatManager target;
 
-        public Hit(Phases baseDamage, Phases totalDamageIncrease, Phases totalDamageMore, CombatManager origin, CombatManager target)
+        public Hit(Phases baseDamage, Phases totalDamageIncrement, Phases totalDamageMultiplier, CombatManager origin, CombatManager target)
         {
             this.baseDamage = baseDamage;
-            this.totalDamageIncrement = totalDamageIncrease;
-            this.totalDamageMultiplier = totalDamageMore;
+            this.totalDamageIncrement = totalDamageIncrement;
+            this.totalDamageMultiplier = totalDamageMultiplier;
             this.origin = origin;
             this.target = target;
         }

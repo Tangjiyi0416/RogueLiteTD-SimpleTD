@@ -5,7 +5,6 @@ namespace CombatSystem
 {
     public abstract class TargetingMethod
     {
-        public abstract void Init();
-        public abstract List<CombatManager> GetTargets(int targetNumber);
+        public abstract HashSet<CombatManager> GetTargets(int targetNumber);
     }
 }
