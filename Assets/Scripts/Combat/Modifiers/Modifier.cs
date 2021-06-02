@@ -18,12 +18,12 @@ namespace CombatSystem
             this.TAGS = TAGS;
         }
 
-        ///<summary>Called when added to a CombatManager.</summary>
+        /// <summary>Called when added to a CombatManager.</summary>
         public abstract void OnAdded(CombatManager owner);
-        ///<summary>
-        ///<para>Called when removed from a CombatManager, remember to undo anything that you have done in Modify() here.</para>
-        ///<para>If you want to do some permanent effect, THEN GO USE STATUS EFFECT !</para>
-        ///</summary>
+        /// <summary>
+        /// <para>Called when removed from a CombatManager, remember to undo anything that you have done in Modify() here.</para>
+        /// <para>If you want to do some permanent effect, THEN GO USE STATUS EFFECT !</para>
+        /// </summary>
         public abstract void OnRemoved(CombatManager owner);
     }
 }

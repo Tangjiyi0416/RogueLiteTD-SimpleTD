@@ -5,8 +5,8 @@ namespace CombatSystem
     {
 
         int fireDamageNumber;
-        public TestBurningStatusEffect(CombatManager origin, CombatManager target, int duration, int fireDamageNumber)
-        : base("test_burning_statuseffect", "Test Burning Status Effect", "You are burning.....", 10, origin, target, duration)
+        public TestBurningStatusEffect(CombatManager origin, CombatManager target, float duration, int fireDamageNumber)
+        : base("test_burning_statuseffect", "Test Burning Status Effect", "You are burning.....", 10f, origin, target, duration)
         {
             this.fireDamageNumber = fireDamageNumber;
         }
@@ -22,11 +22,11 @@ namespace CombatSystem
         public override void Effect()
         {
             Debug.Log($"{target.name} is burning, taking {fireDamageNumber} fire damage per frame, {durationTimer} frames left.");
-            target.life -= CombatManager.CalFinalDamgeFromValues(
+            target.combatData.life -= CombatManager.CalFinalDamgeFromValues(
                 new Phases(0, 0, 0, fireDamageNumber, 0)
-                , origin.totalDamageIncrement
-                , origin.totalDamageMultiplier
-                , target.Resistence
+                , origin.combatData.totalDamageIncrement
+                , origin.combatData.totalDamageMultiplier
+                , target.combatData.resistence
                 ).Total;
             base.Effect();
         }

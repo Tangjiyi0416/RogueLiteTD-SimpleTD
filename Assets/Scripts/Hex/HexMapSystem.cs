@@ -16,7 +16,7 @@ namespace Hex
         private GameObject baseTile;
 
         public Color seletedColor = Color.blue;//When click on the GameObject, it turns to this color (blue)
-        ///<summary>The key (int, int) is the tuple of (coordinate q, coordiante r)</summary>
+        /// <summary>The key (int, int) is the tuple of (coordinate q, coordiante r)</summary>
         //Dictionary is a special data structure that can use a "Key" to access specific item in the storage.
         //In this case, I utilize its "Key" as coordinates for our map, so that we can easily edit the targeted
         //map tile by calling "HexMap.map[(q,r)]".
@@ -29,8 +29,8 @@ namespace Hex
             get { return instance ?? (instance = FindObjectOfType(typeof(HexMapSystem)) as HexMapSystem); }
         }
 
-        ///<param name="mapHeight">How many tiles can vertically fit .</param>
-        ///<param name="mapWidth">How many tiles can horizonatlly fit.</param>
+        /// <param name="mapHeight">How many tiles can vertically fit .</param>
+        /// <param name="mapWidth">How many tiles can horizonatlly fit.</param>
         public void CreateNewMap()
         {
             if (map != null) DestroyCurrentMap();

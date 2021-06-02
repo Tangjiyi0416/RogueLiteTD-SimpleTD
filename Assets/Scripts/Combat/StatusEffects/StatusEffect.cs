@@ -6,17 +6,17 @@ namespace CombatSystem
         public readonly string NAME;
         public readonly string DISPLAY_NAME;
         public string DISPLAY_DESCRIPTION;
-        public readonly int DEFAULT_DURATION;
+        public readonly float DEFAULT_DURATION;
 
-        public int duration;
-        public int durationTimer;
+        public float duration;
+        public float durationTimer;
 
         protected CombatManager origin;
         protected CombatManager target;
-        ///<param name = "duration">in frames</param>
-        ///<summary>Sets origin, and the duration of this effect, the effect will expire when the effectDurationTimer goes zero.</summary>
+        /// <param name = "duration">in frames</param>
+        /// <summary>Sets origin, and the duration of this effect, the effect will expire when the effectDurationTimer goes zero.</summary>
 
-        protected StatusEffect(string NAME, string DISPLAY_NAME, string DISPLAY_DISCRIPTION, int DEFAULT_DURATION, CombatManager origin, CombatManager target, int duration)
+        protected StatusEffect(string NAME, string DISPLAY_NAME, string DISPLAY_DISCRIPTION, float DEFAULT_DURATION, CombatManager origin, CombatManager target, float duration)
         {
             this.NAME = NAME;
             this.DISPLAY_NAME = DISPLAY_NAME;
@@ -32,7 +32,7 @@ namespace CombatSystem
         public abstract void OnRemoved();
         public virtual void Effect()
         {
-            if (durationTimer == 0)
+            if (durationTimer <= 0f)
             {
                 target.RemoveStatusEffect(this.NAME);
                 OnRemoved();

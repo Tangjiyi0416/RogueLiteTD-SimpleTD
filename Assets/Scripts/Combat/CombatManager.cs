@@ -8,47 +8,38 @@ namespace CombatSystem
     public delegate void OnHitEvent(Hit hit);
     public delegate void WhenHitEvent(Hit hit);
     public delegate void UpdateStatusEffectEvent();
+    public delegate void UpdateSkillEvent();
 
     //Every tower and creep have one and only one CombatManager, it handles all combat related stuff except moving.
     //CombatManager fuctions as a container with some extra ability, so it doesn't "generate" stats like life, defence, baseDamage, etc. on its own.
     //When a tower/creep spawns, all those data needs to be assgined to the corresponding fields in CombatManager(Maybe a default modifier?).
     public abstract class CombatManager : MonoBehaviour
     {
-        public int life = 0;
-        public int maxLife = 0;
-        public int defence = 0;
-        public Phases baseDamage = new Phases(0);
-        public Phases totalDamageIncrement = new Phases(100);
-        public Phases totalDamageMultiplier = new Phases(100);
-        public Phases Resistence = new Phases(0);
+        public CombatData combatData;
+
+        public Skill defaultAttack;
         protected List<Modifier> modifiers = new List<Modifier>();
         protected List<StatusEffect> statusEffects = new List<StatusEffect>();
-        public List<Skill> skills = new List<Skill>();//If count >= 1, skills[0] should be the default attack
-        public Skill currentSkill;
-        public virtual void UseCurrentSkill()
+        protected List<Skill> skills = new List<Skill>();//If count >= 1, skills[0] should be the default attack
+        public virtual void Initialize(CombatData combatData, List<Modifier> modifiers, Skill defaultAttack, List<Skill> skills)
         {
-            currentSkill?.Use();
-        }
-        //Schedule a skill that will replace the currentSkill, so it will be called by the next Attack().
-        //Notice that after you replace the currentSkill, it will not automatically change back
-        //, this allows you to make more complex skill while requires more caution when dealing with.
-        //JUST DON'T FORGET TO ADD AND CALL SOME SORT OF "RESET CURRENT SKILL METHOD" IN YOUR SKILLS!!!
-        public virtual void ScheduleSkill(string skillName)
-        {
-            Debug.Log($"ScheduleSkill: {skillName}");
-            currentSkill = skills.Where(x => x.NAME == skillName).First();
-            currentSkill.PrepareSkill();
-            Debug.Log($"CurrentSkill: {currentSkill.DISPLAY_NAME}, it will last {currentSkill.SKILL_DURATION} frames.");
+            this.combatData = combatData;
+            foreach (var m in modifiers) ReceiveModifier(m);
+            this.defaultAttack = defaultAttack;
+            defaultAttack.OnAdded();
+            foreach (var s in skills) ReceiveSkill(s);
 
         }
-        public virtual void ResetCurrentSkillToDefaultSkill()
+        protected void Update()
         {
-            currentSkill = skills.Count > 0 ? skills[0] : null;
-            currentSkill.PrepareSkill();
+            TriggerUpdateStatusEffectEvent();
+            TriggerUpdateSkillEvent();
         }
+
         public event OnHitEvent onHitEvent;
         public event WhenHitEvent whenHitEvent;
         public event UpdateStatusEffectEvent updateStatusEffectEvent;
+        public event UpdateSkillEvent updateSkillEvent;
 
         public void TriggerOnHitEvent(Hit hit)
         {
@@ -62,19 +53,17 @@ namespace CombatSystem
         public virtual void ReceiveHit(Hit hit)
         {
             hit.origin.TriggerOnHitEvent(hit);
-            life -= CombatManager.CalFinalDamgeFromHit(hit).Total;
-            Debug.Log($"{gameObject.name} 被 {hit.origin.currentSkill} Hit, 受到 {CombatManager.CalFinalDamgeFromHit(hit).Total} 點傷害");
+            combatData.life -= CombatManager.CalFinalDamgeFromHit(hit).Total;
+            Debug.Log($"{gameObject.name} 被 {hit.origin.gameObject} Hit, 受到 {CombatManager.CalFinalDamgeFromHit(hit).Total} 點傷害");
             TriggerWhenHitEvent(hit);
             if (IsDead()) Dead();
         }
 
         public virtual void ReceiveHeal(int number)
         {
-            life += number;
-            life = life > maxLife ? maxLife : life;
+            combatData.life += number;
+            combatData.life = combatData.life > combatData.maxLife ? combatData.maxLife : combatData.life;
         }
-
-        public CombatManager tmp;
         public virtual void LifeGain()
         {
             ReceiveModifier(new ExampleLifeGainOnHitModifier());
@@ -82,10 +71,6 @@ namespace CombatSystem
         public virtual void LifeLose()
         {
             RemoveModifier("example_life_gain_on_hit_modifier");
-        }
-        public virtual void ttt()
-        {
-            tmp.ReceiveHit(new Hit(baseDamage, totalDamageIncrement * (new Phases(50)), totalDamageMultiplier, this, tmp));
         }
         public virtual void ReceiveStatusEffect(StatusEffect effect)
         {
@@ -140,9 +125,32 @@ namespace CombatSystem
 
         }
 
+        public virtual void UseSkill(int skillIndex)
+        {
+            skills[skillIndex].Use();
+        }
+        public virtual void ReceiveSkill(Skill skill)
+        {
+
+            skill.OnAdded();
+            skills.Add(skill);
+            Debug.Log($"{gameObject.name} get {skill.DISPLAY_NAME}");
+
+        }
+        protected virtual void TriggerUpdateSkillEvent()
+        {
+            updateSkillEvent?.Invoke();
+        }
+        public virtual void RemoveSkill(int skillIndex)
+        {
+            skills[skillIndex].OnRemoved();
+            Debug.Log($"{gameObject.name} lose {skills[skillIndex].DISPLAY_NAME}");
+            skills.RemoveAt(skillIndex);
+
+        }
         public bool IsDead()
         {
-            return life <= 0 ? true : false;
+            return combatData.life <= 0 ? true : false;
         }
 
         protected virtual void Dead()
@@ -154,7 +162,7 @@ namespace CombatSystem
         //Utility Fuctions
         public static Phases CalFinalDamgeFromHit(Hit hit)
         {
-            return hit.baseDamage * hit.totalDamageIncrement * hit.totalDamageMultiplier * (new Phases(100) - hit.target.Resistence) / (new Phases(1000000));
+            return hit.baseDamage * hit.totalDamageIncrement * hit.totalDamageMultiplier * (new Phases(100) - hit.target.combatData.resistence) / (new Phases(1000000));
         }
         public static Phases CalFinalDamgeFromValues(Phases baseDamage, Phases totalDamageIncrement, Phases totalDamageMultiplier, Phases targetResistence)
         {
@@ -210,6 +218,43 @@ namespace CombatSystem
             this.totalDamageMultiplier = totalDamageMultiplier;
             this.origin = origin;
             this.target = target;
+        }
+    }
+
+    [Serializable]
+    public class CombatData
+    {
+        public int life = 0;
+        public int maxLife = 0;
+        public int defence = 0;
+        public float attackSpeed = 1;//in frames
+        public Phases baseDamage = new Phases(0);
+        public Phases totalDamageIncrement = new Phases(100);
+        public Phases totalDamageMultiplier = new Phases(100);
+        public Phases resistence = new Phases(0);
+
+        public CombatData()
+        {
+            life = 0;
+            maxLife = 0;
+            defence = 0;
+            attackSpeed = 100;
+            baseDamage = new Phases(0);
+            totalDamageIncrement = new Phases(100);
+            totalDamageMultiplier = new Phases(100);
+            resistence = new Phases(0);
+        }
+
+        public CombatData(int life, int maxLife, int defence, int attackSpeed, Phases baseDamage, Phases totalDamageIncrement, Phases totalDamageMultiplier, Phases resistence)
+        {
+            this.life = life;
+            this.maxLife = maxLife;
+            this.defence = defence;
+            this.attackSpeed = attackSpeed;
+            this.baseDamage = baseDamage;
+            this.totalDamageIncrement = totalDamageIncrement;
+            this.totalDamageMultiplier = totalDamageMultiplier;
+            this.resistence = resistence;
         }
     }
 }

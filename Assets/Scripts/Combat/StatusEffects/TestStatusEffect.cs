@@ -5,7 +5,7 @@ namespace CombatSystem
     {
 
         public TestStatusEffect(CombatManager origin, CombatManager target, int duration)
-        : base("", "DISPLAY_NAME", "DISPLAY_DISCRIPTION", 10, origin, target, duration) { }
+        : base("", "DISPLAY_NAME", "DISPLAY_DISCRIPTION", 10f, origin, target, duration) { }
         public override void OnAdded()
         {
             target.updateStatusEffectEvent += Effect;

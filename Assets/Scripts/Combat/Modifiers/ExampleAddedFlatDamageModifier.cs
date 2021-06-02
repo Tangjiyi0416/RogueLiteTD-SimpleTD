@@ -14,12 +14,12 @@ namespace CombatSystem
         //Call when added to a CombatManager
         public override void OnAdded(CombatManager owner)
         {
-            owner.baseDamage += addedBaseDamage;
+            owner.combatData.baseDamage += addedBaseDamage;
         }
         //Call when removed from a CombatManager
         public override void OnRemoved(CombatManager owner)
         {
-            owner.baseDamage += addedBaseDamage;
+            owner.combatData.baseDamage += addedBaseDamage;
         }
     }
 

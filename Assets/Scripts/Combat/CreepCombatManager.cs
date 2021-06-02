@@ -7,8 +7,5 @@ namespace CombatSystem
 {
     public class CreepCombatManager : CombatManager{
 
-        private void Update() {
-            TriggerUpdateStatusEffectEvent();
-        }
     }
 }
