@@ -1,5 +1,5 @@
 using UnityEngine;
-namespace CombatSystem
+namespace EntitySystem
 {
     public class ExampleLifeGainOnHitModifier : Modifier
     {
@@ -11,11 +11,11 @@ namespace CombatSystem
         {
         }
 
-        public override void OnAdded(CombatManager owner)
+        public override void OnAdded(Entity owner)
         {
             owner.onHitEvent += LifeGainOnHit;
         }
-        public override void OnRemoved(CombatManager owner)
+        public override void OnRemoved(Entity owner)
         {
             owner.onHitEvent -= LifeGainOnHit;
         }

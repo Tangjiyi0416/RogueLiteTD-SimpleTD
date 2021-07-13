@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CombatSystem
+namespace EntitySystem
 {
-    public class CreepCombatManager : CombatManager{
+    public class Creep : Entity{
 
     }
 }

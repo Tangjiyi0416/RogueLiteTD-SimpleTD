@@ -1,25 +1,31 @@
 using UnityEngine;
 
-namespace CombatSystem
+namespace EntitySystem
 {
     public class ExampleAddedFlatDamageModifier : Modifier
     {
-        private Phases addedBaseDamage = new Phases(0, 100, 111, 456, 45);
+        private int[] addedBaseDamage = new int[] {0, 8, 100, 111, 456, 5 };
 
         public ExampleAddedFlatDamageModifier()
-         : base("example_added_flat_damage_modifier", "Example Added Flat Damage Modifier", "NO DESCRIPTION", new string[]{})
+         : base("example_added_flat_damage_modifier", "Example Added Flat Damage Modifier", "NO DESCRIPTION", new string[] { })
         {
         }
 
         //Call when added to a CombatManager
-        public override void OnAdded(CombatManager owner)
+        public override void OnAdded(Entity owner)
         {
-            owner.combatData.baseDamage += addedBaseDamage;
+            for (int i = 0; i < 5; i++)
+            {
+                owner.combatData.damage[i].ScaleBaseValue(addedBaseDamage[i]);
+            }
         }
         //Call when removed from a CombatManager
-        public override void OnRemoved(CombatManager owner)
+        public override void OnRemoved(Entity owner)
         {
-            owner.combatData.baseDamage += addedBaseDamage;
+            for (int i = 0; i < 5; i++)
+            {
+                owner.combatData.damage[i].ScaleBaseValue(-addedBaseDamage[i]);
+            }
         }
     }
 

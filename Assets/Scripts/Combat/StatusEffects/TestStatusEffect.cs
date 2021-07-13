@@ -1,10 +1,10 @@
 using UnityEngine;
-namespace CombatSystem
+namespace EntitySystem
 {
     public class TestStatusEffect : StatusEffect
     {
 
-        public TestStatusEffect(CombatManager origin, CombatManager target, int duration)
+        public TestStatusEffect(Entity origin, Entity target, int duration)
         : base("", "DISPLAY_NAME", "DISPLAY_DISCRIPTION", 10f, origin, target, duration) { }
         public override void OnAdded()
         {

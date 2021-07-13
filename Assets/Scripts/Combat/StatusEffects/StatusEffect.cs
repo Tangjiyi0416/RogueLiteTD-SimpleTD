@@ -1,4 +1,4 @@
-namespace CombatSystem
+namespace EntitySystem
 {
     //StatusEffect is the base class for any combat-related Effects you want to implement
     public abstract class StatusEffect
@@ -11,12 +11,12 @@ namespace CombatSystem
         public float duration;
         public float durationTimer;
 
-        protected CombatManager origin;
-        protected CombatManager target;
+        protected Entity origin;
+        protected Entity target;
         /// <param name = "duration">in frames</param>
         /// <summary>Sets origin, and the duration of this effect, the effect will expire when the effectDurationTimer goes zero.</summary>
 
-        protected StatusEffect(string NAME, string DISPLAY_NAME, string DISPLAY_DISCRIPTION, float DEFAULT_DURATION, CombatManager origin, CombatManager target, float duration)
+        protected StatusEffect(string NAME, string DISPLAY_NAME, string DISPLAY_DISCRIPTION, float DEFAULT_DURATION, Entity origin, Entity target, float duration)
         {
             this.NAME = NAME;
             this.DISPLAY_NAME = DISPLAY_NAME;
