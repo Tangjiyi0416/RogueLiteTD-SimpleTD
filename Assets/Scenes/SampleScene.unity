@@ -454,8 +454,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: CombatSystem.CombatManager, Assembly-CSharp
+      - m_Target: {fileID: 1195200862}
+        m_TargetAssemblyTypeName: EntitySystem.Entity, Assembly-CSharp
         m_MethodName: LifeLose
         m_Mode: 1
         m_Arguments:
@@ -811,7 +811,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1195200862}
-        m_TargetAssemblyTypeName: Tower, Assembly-CSharp
+        m_TargetAssemblyTypeName: EntitySystem.Tower, Assembly-CSharp
         m_MethodName: SelfHit
         m_Mode: 1
         m_Arguments:
@@ -927,28 +927,28 @@ MonoBehaviour:
   combatData:
     life: 1000
     maxLife:
-      baseValue: 50
-      increment: 1
-      multiplier: 1
+      baseValue: 10000
+      increment: 0
+      multiplier: 0
     defence:
       baseValue: 0
-      increment: 1
-      multiplier: 1
+      increment: 0
+      multiplier: 0
     attackSpeed:
       baseValue: 1
-      increment: 1
-      multiplier: 1
+      increment: 0
+      multiplier: 0
     skillCooldownSpeed:
-      baseValue: 0
+      baseValue: 1
       increment: 0
       multiplier: 0
     damage:
     - baseValue: 0
       increment: 0
       multiplier: 0
-    - baseValue: 0
-      increment: 0
-      multiplier: 0
+    - baseValue: 10
+      increment: 1.2
+      multiplier: 2
     - baseValue: 0
       increment: 0
       multiplier: 0
@@ -962,6 +962,21 @@ MonoBehaviour:
       increment: 0
       multiplier: 0
     rawResistence:
+    - baseValue: 0
+      increment: 0
+      multiplier: 0
+    - baseValue: 0
+      increment: 0
+      multiplier: 0
+    - baseValue: 0
+      increment: 0
+      multiplier: 0
+    - baseValue: 0
+      increment: 0
+      multiplier: 0
+    - baseValue: 0
+      increment: 0
+      multiplier: 0
     - baseValue: 0
       increment: 0
       multiplier: 0
@@ -1036,7 +1051,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Fire Attack
+  m_Text: Fire Attack Buff State
 --- !u!222 &1282981726
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1351,8 +1366,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: CombatSystem.CombatManager, Assembly-CSharp
+      - m_Target: {fileID: 1195200862}
+        m_TargetAssemblyTypeName: EntitySystem.Entity, Assembly-CSharp
         m_MethodName: LifeGain
         m_Mode: 1
         m_Arguments:
@@ -1475,11 +1490,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   combatData:
-    life: 50
+    life: 10000
     maxLife:
       baseValue: 10000
-      increment: 1
-      multiplier: 1
+      increment: 0
+      multiplier: 0
     defence:
       baseValue: 0
       increment: 1

@@ -14,7 +14,7 @@ namespace EntitySystem
             ReceiveSkill(new TestBuffFireAttackSkill(this, animator));
             ReceiveAttack(new BasicTowerAttack(this, animator));
         }
-        public virtual void SelfHit()
+        public void SelfHit()
         {
             ReceiveHit(new Hit(combatData.damage, this, this));
             Debug.Log("Why are you hitting yourself?");
