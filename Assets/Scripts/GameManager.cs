@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using Hex;
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance = null;
@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour
         if (instance == null) instance = this as GameManager;
         if (instance == this) DontDestroyOnLoad(this);
         else DestroyImmediate(this);
+        HexMapSaveLoadManager.Instance.LoadSavedMap();
     }
 
     private void Update()

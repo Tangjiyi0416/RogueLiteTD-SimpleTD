@@ -13,7 +13,7 @@ namespace Hex
         {
             data = new HexTileData(baseTileName, q, r);
             gameObject.name = $"{q}, {r}";
-            data.currentColor = data.originalColor = GetComponentInChildren<MeshRenderer>().material.color;
+            data.currentColor = data.originalColor = GetComponentInChildren<MeshRenderer>().sharedMaterial.color;
 
         }
         public void LoadData(HexTileData data)
@@ -33,17 +33,18 @@ namespace Hex
 
         void OnMouseEnter()
         {
-            meshRenderer.material.SetFloat("Boolean_1dbae06b4e654335b15f13bbc0562c0c",1f);
+            meshRenderer.material.SetFloat("Boolean_1dbae06b4e654335b15f13bbc0562c0c", 1f);
         }
         void OnMouseDown()
         {
             data.currentColor = HexMapSystem.Instance.seletedColor;
+            data.isObstacle = true;
             meshRenderer.material.color = data.currentColor;
 
         }
         void OnMouseExit()
         {
-            meshRenderer.material.SetFloat("Boolean_1dbae06b4e654335b15f13bbc0562c0c",0f);
+            meshRenderer.material.SetFloat("Boolean_1dbae06b4e654335b15f13bbc0562c0c", 0f);
         }
     }
 
@@ -52,6 +53,8 @@ namespace Hex
     {
         public string originalPrefabName;
         public int q, r;
+
+        public bool isObstacle = false;
 
         //This stores the GameObject’s original color
         public Color originalColor = Color.gray;
@@ -66,6 +69,6 @@ namespace Hex
     }
     public enum GroundLevel
     {
-        High,Low
+        High, Low
     }
 }

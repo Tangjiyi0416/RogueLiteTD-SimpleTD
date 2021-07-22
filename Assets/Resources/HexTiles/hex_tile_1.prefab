@@ -144,5 +144,6 @@ MonoBehaviour:
     originalPrefabName: 
     q: 0
     r: 0
-    originalColor: {r: 0, g: 0, b: 0, a: 0}
-    currentColor: {r: 0, g: 0, b: 0, a: 0}
+    isObstacle: 0
+    originalColor: {r: 0.4056604, g: 0.4056604, b: 0.4056604, a: 1}
+    currentColor: {r: 0.4039216, g: 0.4039216, b: 0.4039216, a: 1}

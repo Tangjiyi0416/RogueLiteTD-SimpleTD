@@ -7,11 +7,8 @@ namespace Hex
 {
     public class HexMapSystem : MonoBehaviour
     {
-
-        [SerializeField]
-        private int mapHeight = 7, mapWidth = 20;
-        [SerializeField]
-        private float hexSize = 1f;
+        public int mapHeight = 7, mapWidth = 20;
+        public float hexSize = 1f;
         [SerializeField]
         private GameObject baseTile;
 
@@ -55,17 +52,18 @@ namespace Hex
 
         public void DestroyCurrentMap()
         {
-            if (map == null) { Debug.Log("There is no map, nomad."); return; }
-            foreach (var hex in map)
-            {
-                GameObject.DestroyImmediate(hex.Value.gameObject);
-            }
-            map.Clear();
-            map = null;
+            if (map == null && transform.childCount == 0) { Debug.Log("There is no map, nomad."); return; }
 
+            while (transform.childCount > 0)
+            {
+                DestroyImmediate(transform.GetChild(0).gameObject);
+            }
+
+            map?.Clear();
+            map = null;
             Debug.Log("Old Map Destroyed.");
         }
-
+        #region Coordinate Coverting Methods
         const float sqrt3 = 1.7320508f;
         const float inverSqrt3 = 0.5773502f;
         //Methods that convert coordinates to world or to map.
@@ -102,36 +100,27 @@ namespace Hex
             else if (diffY > diffZ) y = -x - z;
             return (x, y);
         }
+        #endregion
 
-        void OnGUI()
+        #region Map Utilities
+        public List<HexTile> GetNeighborsByAxialCoord(int q, int r)
         {
-            for (int r = 0; r < mapHeight; r++)
+            List<HexTile> neighbors = new List<HexTile>();
+            int[,] neighborOffset = { { 0, 1 }, { 1, 0 }, { 1, -1 }, { 0, -1 }, { -1, 0 }, { -1, 1 } };
+            for (int i = 0; i < 6; i++)
             {
-                int offset = -(r >> 1);
-                for (int q = offset; q < mapWidth + offset; q++)
-                {
-                    drawString($"{q}, {r}", GetWorldCoordFromAxialCoord(q, r) + Vector3.up * 0.15f, Color.black);
-                }
+                HexTile tile;
+                map.TryGetValue((q + neighborOffset[i, 0], r + neighborOffset[i, 1]), out tile);
+                if (tile != null) neighbors.Add(tile);
             }
-
-
+            return neighbors;
         }
-        static public void drawString(string text, Vector3 worldPos, Color? colour = null)
+        public int GetDistanceByAxialCoord(int q1, int r1, int q2, int r2)
         {
-            var restoreColor = GUI.color;
-
-            if (colour.HasValue) GUI.color = colour.Value;
-            Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
-            if (screenPos.y < 0 || screenPos.y > Screen.height || screenPos.x < 0 || screenPos.x > Screen.width || screenPos.z < 0)
-            {
-                //    GUI.color = restoreColor;
-                return;
-            }
-            Vector2 size = GUI.skin.label.CalcSize(new GUIContent(text));
-            //Debug.Log(screenPos.y);
-            GUI.Label(new Rect(screenPos.x - (size.x / 2), -screenPos.y + Screen.height, size.x, size.y), text);
-            GUI.color = restoreColor;
+            return (Mathf.Abs(q1 - q2) + Mathf.Abs(q1 + r1 - q2 - r2) + Mathf.Abs(r1 - r2)) / 2;
         }
+        #endregion
+
 
         Plane m_Plane;//A ghost plane for raycasting.
                       //Vector3 m_DistanceFromCamera;//Make some space between plane(overlaps the map) and Camera
@@ -147,7 +136,7 @@ namespace Hex
         void Start()
         {
 
-            Camera.main.transform.position = new Vector3((mapWidth - 1) * hexSize * 1.7320508f / 2, +10, (mapHeight - 1) * hexSize - 10);
+            //Camera.main.transform.position = new Vector3((mapWidth - 1) * hexSize * 1.7320508f / 2, +10, (mapHeight - 1) * hexSize - 10);
             m_Plane = new Plane(Vector3.up, Vector3.up * 0.15f);
         }
         void Update()
@@ -167,6 +156,7 @@ namespace Hex
                     Vector3 hitPoint = ray.GetPoint(enter);
                     (int, int) axialCoord = GetAxialCoordFromWorldCoord(hitPoint.x, hitPoint.z);
                     Debug.Log($"Axial coordinate: {axialCoord}, Offset coordinate: {GetOffsetCoordFromWorldCoord(hitPoint.x, hitPoint.z)}");
+                    Debug.Log($"NeighborCount: {GetNeighborsByAxialCoord(axialCoord.Item1, axialCoord.Item2).Count}");
                 }
             }
         }
