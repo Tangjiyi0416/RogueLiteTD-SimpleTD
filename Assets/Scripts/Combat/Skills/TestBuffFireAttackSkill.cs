@@ -1,12 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-namespace EntitySystem
+namespace CombatSystem
 {
     public class TestBuffFireAttackSkill : Skill
     {
         private ExampleAddedFireDamageModifier modifier = new ExampleAddedFireDamageModifier();
-        public TestBuffFireAttackSkill(Entity owner, Animator animator) : base(
+        public TestBuffFireAttackSkill(CombatManager owner, Animator animator) : base(
             "test_buff_fireattack_skill_auto"
             , "Fire Buff Skill"
             , "Your attack is imbued with fire."

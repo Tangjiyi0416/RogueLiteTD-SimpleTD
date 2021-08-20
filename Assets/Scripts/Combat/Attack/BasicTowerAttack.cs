@@ -1,11 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-namespace EntitySystem
+namespace CombatSystem
 {
     public class BasicTowerAttack : Attack
     {
-        public BasicTowerAttack(Entity owner, Animator animator) : base(
+        public BasicTowerAttack(CombatManager owner, Animator animator) : base(
             "basic_tower_attack"
             , "Basic Tower Attack"
             , "DisplayDiscription"

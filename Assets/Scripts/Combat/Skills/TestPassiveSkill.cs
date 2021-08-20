@@ -1,11 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-namespace EntitySystem
+namespace CombatSystem
 {
     public class TestPassiveSkill : Skill
     {
-        public TestPassiveSkill(Entity owner, Animator animator) : base(
+        public TestPassiveSkill(CombatManager owner, Animator animator) : base(
             "test_skill_passive"
             , "Lively Shell"
             , "You have a lively shell, the more hits you take, the stronger it grows."

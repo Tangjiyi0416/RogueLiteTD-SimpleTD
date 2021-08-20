@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-namespace EntitySystem
+namespace CombatSystem
 {
     public abstract class Attack
     {
@@ -27,10 +27,10 @@ namespace EntitySystem
         protected float cooldownTimer;
 
         protected TargetingHandler targetingHandler;
-        public Entity owner;
+        public CombatManager owner;
         protected Animator animator;
 
-        protected Attack(string Name, string DisplayName, string DisplayDiscription, float attackTime, float cooldown, TargetingHandler targetingHandler, Entity owner, Animator animator)
+        protected Attack(string Name, string DisplayName, string DisplayDiscription, float attackTime, float cooldown, TargetingHandler targetingHandler, CombatManager owner, Animator animator)
         {
             this.Name = Name;
             this.DisplayName = DisplayName;
@@ -59,7 +59,7 @@ namespace EntitySystem
                     OnCooldownEnded();
                     OnAttackStarted();
                 }
-                cooldownTimer -= owner.combatData.attackSpeed.FinalValue * GameManager.instance.gameDeltaTime;
+                cooldownTimer -= owner.combatData.attackSpeed.FinalValue * GameManager.Instance.gameDeltaTime;
             }
             else if (IsAttacking)
             {
@@ -72,7 +72,7 @@ namespace EntitySystem
                     OnAttackEnded();
                     OnCooldownStarted();
                 }
-                attackTimeTimer -= owner.combatData.attackSpeed.FinalValue * GameManager.instance.gameDeltaTime;
+                attackTimeTimer -= owner.combatData.attackSpeed.FinalValue * GameManager.Instance.gameDeltaTime;
 
             }
         }

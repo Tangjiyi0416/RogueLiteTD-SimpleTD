@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace EntitySystem
+namespace CombatSystem
 {
     public class ExampleAddedFireDamageModifier : Modifier
     {
@@ -14,12 +14,12 @@ namespace EntitySystem
         }
 
         //Call when added to a CombatManager
-        public override void OnAdded(Entity owner)
+        public override void OnAdded(CombatManager owner)
         {
             owner.combatData.damage[((int)DamageType.Types.Fire)].ScaleBaseValue(addedFireDamage);
         }
         //Call when removed from a CombatManager
-        public override void OnRemoved(Entity owner)
+        public override void OnRemoved(CombatManager owner)
         {
             owner.combatData.damage[((int)DamageType.Types.Fire)].ScaleBaseValue(-addedFireDamage);
 

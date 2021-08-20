@@ -1,6 +1,6 @@
 using System;
 using UnityEngine;
-namespace EntitySystem
+namespace CombatSystem
 {
     //TODO: add template gameobject to handle the display of Skill
     public abstract class Skill
@@ -24,9 +24,9 @@ namespace EntitySystem
         public float FullSkillChargeTime { get; protected set; }//in seconds
         protected float skillChargingTimer;
 
-        public Entity owner;
+        public CombatManager owner;
         protected Animator animator;
-        protected Skill(string Name, string DisplayName, string DisplayDiscription, string[] Tags, Entity owner, Animator animator)
+        protected Skill(string Name, string DisplayName, string DisplayDiscription, string[] Tags, CombatManager owner, Animator animator)
         {
             this.Name = Name;
             this.DisplayName = DisplayName;
@@ -54,7 +54,7 @@ namespace EntitySystem
                     //And don't forget to set the IsInDuration to true!
                     OnChargingEnded();
                 }
-                skillChargingTimer += owner.combatData.skillCooldownSpeed.FinalValue * GameManager.instance.gameDeltaTime;
+                skillChargingTimer += owner.combatData.skillCooldownSpeed.FinalValue * GameManager.Instance.gameDeltaTime;
             }
             else if (IsInDuration)
             {
@@ -67,7 +67,7 @@ namespace EntitySystem
                     OnDurationEnded();
                     OnChargingStarted();
                 }
-                skillDurationTimer -= GameManager.instance.gameDeltaTime;
+                skillDurationTimer -= GameManager.Instance.gameDeltaTime;
             }
         }
 

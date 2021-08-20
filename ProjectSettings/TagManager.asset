@@ -19,7 +19,7 @@ TagManager:
   - 
   - 
   - 
-  - 
+  - Map
   - 
   - 
   - 
@@ -41,4 +41,10 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Prop
+    uniqueID: 4057981591
+    locked: 0
+  - name: Map Tile
+    uniqueID: 1373353193
     locked: 0

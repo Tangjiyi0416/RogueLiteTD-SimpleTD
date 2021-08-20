@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace EntitySystem
+namespace CombatSystem
 {
     public class ExampleAddedFlatDamageModifier : Modifier
     {
@@ -12,7 +12,7 @@ namespace EntitySystem
         }
 
         //Call when added to a CombatManager
-        public override void OnAdded(Entity owner)
+        public override void OnAdded(CombatManager owner)
         {
             for (int i = 0; i < 5; i++)
             {
@@ -20,7 +20,7 @@ namespace EntitySystem
             }
         }
         //Call when removed from a CombatManager
-        public override void OnRemoved(Entity owner)
+        public override void OnRemoved(CombatManager owner)
         {
             for (int i = 0; i < 5; i++)
             {

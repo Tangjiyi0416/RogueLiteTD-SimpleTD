@@ -1,17 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Hex;
-namespace EntitySystem
+using MapSystem;
+namespace CombatSystem
 {
     public class TestTargetingHandler : TargetingHandler
     {
-        private HashSet<Entity> targets = new HashSet<Entity>();
-        public override HashSet<Entity> GetTargets(int targetNumber)
+        private HashSet<CombatManager> targets = new HashSet<CombatManager>();
+        public override HashSet<CombatManager> GetTargets(int targetNumber)
         {
             targets.RemoveWhere(t => t == null);
             if (targets.Count < targetNumber)
-                targets.Add(GameObject.Find("TestCreep")?.GetComponent<Entity>());
+                targets.Add(GameObject.Find("TestCreep")?.GetComponent<CombatManager>());
             return targets;
         }
     }

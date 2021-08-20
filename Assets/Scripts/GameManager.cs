@@ -1,23 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Hex;
+using MapSystem;
 public class GameManager : MonoBehaviour
 {
-    public static GameManager instance = null;
+
+    static GameManager instance = null;
     public static GameManager Instance
     {
-        get { return instance ?? (instance = FindObjectOfType(typeof(GameManager)) as GameManager); }
+        get { return instance ?? (instance = FindObjectOfType<GameManager>()); }
     }
 
     public float gameDeltaTime;
     private void Awake()
     {
-        instance = GameManager.Instance;
-        if (instance == null) instance = this as GameManager;
-        if (instance == this) DontDestroyOnLoad(this);
+        if (instance == null) instance = this;
         else DestroyImmediate(this);
-        HexMapSaveLoadManager.Instance.LoadSavedMap();
     }
 
     private void Update()

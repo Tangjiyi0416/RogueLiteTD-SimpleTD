@@ -1,11 +1,11 @@
 using UnityEngine;
-namespace EntitySystem
+namespace CombatSystem
 {
     public class TestBurningStatusEffect : StatusEffect
     {
 
         int fireDamage;
-        public TestBurningStatusEffect(Entity origin, Entity target, float duration, int fireDamage)
+        public TestBurningStatusEffect(CombatManager origin, CombatManager target, float duration, int fireDamage)
         : base("test_burning_statuseffect", "Test Burning Status Effect", "You are burning.....", 10f, origin, target, duration)
         {
             this.fireDamage = fireDamage;

@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-namespace EntitySystem
+namespace CombatSystem
 {
     //TODO: add template gameobject to handle the display of modifier
     public abstract class Modifier
@@ -20,11 +20,11 @@ namespace EntitySystem
         }
 
         /// <summary>Called when added to a CombatManager.</summary>
-        public abstract void OnAdded(Entity owner);
+        public abstract void OnAdded(CombatManager owner);
         /// <summary>
         /// <para>Called when removed from a CombatManager, remember to undo anything that you have done in Modify() here.</para>
         /// <para>If you want to do some permanent effect, THEN GO USE STATUS EFFECT !</para>
         /// </summary>
-        public abstract void OnRemoved(Entity owner);
+        public abstract void OnRemoved(CombatManager owner);
     }
 }
